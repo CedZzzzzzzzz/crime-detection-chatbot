@@ -51,16 +51,28 @@ def chat_with_ai():
         user_question = data.get('question', '')
         detections = data.get('detections', [])
         
-        # Get detection context
-        det_list = [d.get('class_name', 'object') for d in detections]
-        context_str = ", ".join(det_list) if det_list else "no specific objects identified yet"
+        log_entries = []
+        highest_conf = 0
+        primary_obj = "None"
         
-        # Get relevant rules/regulations from RAG
+        if detections:
+            for d in detections:
+                name = d.get('class_name', 'Unknown Object').upper()
+                conf = d.get('confidence', 0)
+                log_entries.append(f"- {name}: {conf}% confidence")
+                
+                # Track the most certain detection for the summary
+                if conf > highest_conf:
+                    highest_conf = conf
+                    primary_obj = name
+        
+        evidence_str = "\n".join(log_entries) if log_entries else "No specific objects identified yet"
+        
+        # --- RAG SEARCH ---
         rag_context = ""
         source_citation = ""
         if rag_engine.vectorstore:
             results = rag_engine.search(user_question, k=2)  
-            
             if results:
                 sources = set()
                 context_parts = []
@@ -68,7 +80,6 @@ def chat_with_ai():
                     source = os.path.basename(result['source'])
                     sources.add(source.replace('.pdf', '').replace('-', ' ').title())
                     context_parts.append(result['content'])
-                
                 rag_context = "\n\n".join(context_parts)
                 source_citation = ", ".join(sources)
 
@@ -76,9 +87,12 @@ def chat_with_ai():
         prompt = f"""You are Detective Co-AI-Nan, a sharp, observant, and professional Forensic AI Assistant. 
 Your goal is to assist the user in their investigation by analyzing evidence and interpreting regulations.
 
-### INVESTIGATION LOGS (CURRENT CONTEXT):
-- EVIDENCE DETECTED BY CAMERA: {context_str}
-- RELEVANT LEGAL DOCUMENTS: 
+### FORENSIC EVIDENCE LOG:
+{evidence_str}
+- PRIMARY THREAT: {primary_obj}
+- ANALYSIS TIMESTAMP: 2026-01-19 13:36:08
+
+### LEGAL REFERENCE DATA:
 {rag_context if rag_context else "No direct legal matches found in current database."}
 - SOURCE CITATIONS: {source_citation if source_citation else "N/A"}
 
@@ -102,6 +116,7 @@ User's Question: "{user_question}" """
     except Exception as e:
         print(f"❌ Gemini error: {e}")
         return jsonify({"reply": "⚠️ Investigation AI temporarily unavailable. Please try again."}), 500
+    
 if __name__ == '__main__':
     print("\n" + "="*50)
     print("🚀 Starting Detective AI Chatbot Service")
