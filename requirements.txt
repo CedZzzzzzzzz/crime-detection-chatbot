@@ -1,19 +1,11 @@
 flask==3.0.0
 flask-cors==4.0.0
 python-dotenv
-google-generativeai
 gunicorn==21.2.0
-
 langchain==0.1.0
-
 langchain-community
 langchain-core
-langsmith
-
-# Maintain your other RAG dependencies
-transformers==4.35.2
-tokenizers==0.15.2
-sentence-transformers==3.0.1
+langchain-google-genai  
 faiss-cpu==1.7.4
 pypdf==3.17.4
 docx2txt==0.8

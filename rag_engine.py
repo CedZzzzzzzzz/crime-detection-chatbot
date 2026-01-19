@@ -3,30 +3,16 @@ from typing import List, Dict
 from langchain_community.document_loaders import PyPDFLoader, TextLoader, Docx2txtLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
-from sentence_transformers import SentenceTransformer
-
-class SimpleEmbeddings:
-    """Simple wrapper for sentence-transformers"""
-    def __init__(self, model_name="sentence-transformers/all-MiniLM-L6-v2"):
-        self.model = SentenceTransformer(model_name)
-    
-    def embed_documents(self, texts):
-        return self.model.encode(texts).tolist()
-    
-    def embed_query(self, text):
-        return self.model.encode([text])[0].tolist()
-
-    def __call__(self, text):
-        """Make the object callable for compatibility"""
-        if isinstance(text, list):
-            return self.embed_documents(text)
-        return self.embed_query(text)
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 class RAGEngine:
     def __init__(self, documents_folder="rules_documents"):
         self.documents_folder = documents_folder
         self.vectorstore = None
-        self.embeddings = SimpleEmbeddings()
+        
+        # This replaces the local SentenceTransformer class
+        # It uses the GOOGLE_API_KEY from your environment variables
+        self.embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
         
         if not os.path.exists(documents_folder):
             os.makedirs(documents_folder)
