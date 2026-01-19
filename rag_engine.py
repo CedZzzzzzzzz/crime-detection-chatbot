@@ -58,7 +58,7 @@ class RAGEngine:
         # Split documents into chunks
         print(f"📝 Splitting {len(all_documents)} pages into chunks...")
         text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=1000,
+            chunk_size=2000,
             chunk_overlap=200,
             length_function=len
         )

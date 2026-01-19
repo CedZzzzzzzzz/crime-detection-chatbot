@@ -49,5 +49,5 @@ Thumbs.db
 yolov8n.pt
 
 # RAG Documents
-rules_documents/*.pdf
-rules_documents/*.docx
+#rules_documents/*.pdf
+#rules_documents/*.docx
