@@ -23,13 +23,8 @@ if not GOOGLE_API_KEY:
     print("❌ Error: GOOGLE_API_KEY not found in .env file")
 else: 
     genai.configure(api_key=GOOGLE_API_KEY)
-    try:
-        chat_model = genai.GenerativeModel('models/gemini-3-flash')
-        print("✅ Gemini 3 Flash initialized successfully")
-    except Exception as e:
-        # Fallback to 1.5-flash if 3-flash has a version conflict
-        chat_model = genai.GenerativeModel('models/gemini-1.5-flash')
-        print(f"⚠️ Switching to 1.5-Flash fallback: {e}")
+    chat_model = genai.GenerativeModel('gemini-2.5-flash')
+    print("✅ Gemini AI initialized successfully")
 
 # Initialize RAG Engine
 print("\n🔧 Initializing RAG Engine...")
