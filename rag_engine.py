@@ -1,5 +1,5 @@
 import os
-import time  # REQUIRED for the delay
+import time  
 from typing import List, Dict
 from langchain_community.document_loaders import PyPDFLoader, TextLoader, Docx2txtLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -10,7 +10,7 @@ class RAGEngine:
     def __init__(self, documents_folder="rules_documents"):
         self.documents_folder = documents_folder
         self.vectorstore = None
-        self.embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+        self.embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
         
         if not os.path.exists(documents_folder):
             os.makedirs(documents_folder)
@@ -43,8 +43,8 @@ class RAGEngine:
         
         # Split documents into chunks
         text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=2000,
-            chunk_overlap=200,
+            chunk_size=5000,
+            chunk_overlap=300,
             length_function=len
         )
         chunks = text_splitter.split_documents(all_documents)
