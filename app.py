@@ -42,6 +42,9 @@ def home():
 
 @app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat_with_ai():
+
+    if request.method == 'OPTIONS':
+        return '', 200
     """Detective AI investigation assistant with RAG"""
     try:
         data = request.get_json()
