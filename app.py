@@ -23,7 +23,7 @@ if not GOOGLE_API_KEY:
     print("❌ Error: GOOGLE_API_KEY not found in .env file")
 else: 
     genai.configure(api_key=GOOGLE_API_KEY)
-    chat_model = genai.GenerativeModel('gemini-2.5-flash-lite')
+    chat_model = genai.GenerativeModel('gemini-2.5-flash')
     print("✅ Gemini AI initialized successfully")
 
 # Initialize RAG Engine
