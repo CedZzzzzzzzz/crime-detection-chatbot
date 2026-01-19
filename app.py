@@ -8,7 +8,13 @@ from rag_engine import RAGEngine
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "https://crime-detection-system-steel.vercel.app"}})
+CORS(app, resources={
+    r"/*": {
+        "origins": ["https://crime-detection-system-steel.vercel.app"],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
 
 # Initialize Gemini AI
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
@@ -34,7 +40,7 @@ def home():
         "rag_status": "Active" if rag_engine.vectorstore else "No documents loaded"
     })
 
-@app.route('/chat', methods=['POST'])
+@app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat_with_ai():
     """Detective AI investigation assistant with RAG"""
     try:
