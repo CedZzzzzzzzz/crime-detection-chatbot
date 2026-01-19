@@ -1,0 +1,17 @@
+flask==3.0.0
+flask-cors==4.0.0
+python-dotenv
+google-generativeai
+gunicorn==21.2.0
+
+# RAG dependencies
+langchain==0.1.0
+langchain-community==0.0.20
+langchain-core==0.1.23
+langsmith==0.0.92
+transformers==4.35.2
+tokenizers==0.15.2
+sentence-transformers==3.0.1
+faiss-cpu==1.7.4
+pypdf==3.17.4
+docx2txt==0.8
