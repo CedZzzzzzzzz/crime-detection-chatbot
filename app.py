@@ -42,9 +42,9 @@ def home():
 
 @app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat_with_ai():
-
     if request.method == 'OPTIONS':
         return '', 200
+        
     """Detective AI investigation assistant with RAG"""
     try:
         data = request.get_json()
@@ -53,10 +53,11 @@ def chat_with_ai():
         
         # Get detection context
         det_list = [d.get('class_name', 'object') for d in detections]
-        context_str = ", ".join(det_list) if det_list else "no objects"
+        context_str = ", ".join(det_list) if det_list else "no specific objects identified yet"
         
         # Get relevant rules/regulations from RAG
         rag_context = ""
+        source_citation = ""
         if rag_engine.vectorstore:
             results = rag_engine.search(user_question, k=2)  
             
@@ -70,38 +71,26 @@ def chat_with_ai():
                 
                 rag_context = "\n\n".join(context_parts)
                 source_citation = ", ".join(sources)
-            else:
-                rag_context = None
-                source_citation = None
-        
-        # Build enhanced prompt
-        if rag_context:
-            prompt = f"""Act as a professional detective and analytical assistant specialized in evidence-based scenarios.
 
-Evidence Detected: {context_str}
+        # Revised System Prompt for better Persona and Conversational Flow
+        prompt = f"""You are Detective Co-AI-Nan, a sharp, observant, and professional Forensic AI Assistant. 
+Your goal is to assist the user in their investigation by analyzing evidence and interpreting regulations.
 
-Relevant Regulations:
-{rag_context}
-[Source: {source_citation}]
+### INVESTIGATION LOGS (CURRENT CONTEXT):
+- EVIDENCE DETECTED BY CAMERA: {context_str}
+- RELEVANT LEGAL DOCUMENTS: 
+{rag_context if rag_context else "No direct legal matches found in current database."}
+- SOURCE CITATIONS: {source_citation if source_citation else "N/A"}
 
-Question: "{user_question}"
+### OPERATIONAL DIRECTIVES:
+1. Persona: Maintain an analytical, professional, and observant detective persona. You can be slightly formal but conversational—like a seasoned investigator briefing a partner.
+2. Conversation: If the user is just talking or asking non-investigative questions, respond naturally but stay in character.
+3. Using Law/Regulations: If the user's question relates to the provided "Relevant Legal Documents," cite the source as: "According to [Source Name]..." Never mention page numbers.
+4. General Analysis: If the user asks a question not covered by the legal documents, use your "Detective Expertise" (general knowledge) to provide a logical analysis.
+5. Handling Uncertainty: If you lack evidence or documents to support a specific claim, state: "The current evidence is insufficient to reach a definitive forensic conclusion on this matter."
+6. Brevity: Keep responses professional and to-the-point. Only elaborate if the user asks for a "Deep Dive" or "Case Analysis."
 
-Instructions:
-- Provide direct, concise answers for simple questions
-- For regulation-related queries, cite sources as "According to [source name], ..."
-- Never mention page numbers
-- Base answers on the regulations provided above
-- Keep responses professional and to-the-point
-- Only elaborate when the question requires detailed analysis
-- Still answer some questions if they are not related to in the regulations provided and if they are nout provided, state that you don't have enough evidence to support your claims"""
-        else:
-            prompt = f"""Act as a professional detective analyzing this evidence.
-
-**Evidence Detected:** {context_str}
-
-**Question:** "{user_question}"
-
-Provide a direct, professional answer based on your analytical expertise. Keep it concise unless the question requires detailed investigation."""
+User's Question: "{user_question}" """
 
         response = chat_model.generate_content(prompt)
         
@@ -113,7 +102,6 @@ Provide a direct, professional answer based on your analytical expertise. Keep i
     except Exception as e:
         print(f"❌ Gemini error: {e}")
         return jsonify({"reply": "⚠️ Investigation AI temporarily unavailable. Please try again."}), 500
-
 if __name__ == '__main__':
     print("\n" + "="*50)
     print("🚀 Starting Detective AI Chatbot Service")
