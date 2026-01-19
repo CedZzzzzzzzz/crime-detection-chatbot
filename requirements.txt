@@ -1,18 +1,16 @@
 flask==3.0.0
 flask-cors==4.0.0
-pillow==10.1.0
-numpy==1.24.3
-torch==2.1.0
-torchvision==0.16.0
-opencv-python-headless==4.8.1.78
-gunicorn==21.2.0
 python-dotenv
+google-generativeai
+gunicorn==21.2.0
 
-# RAG dependencies 
 langchain==0.1.0
-langchain-community==0.0.20
-langchain-core==0.1.23
-langsmith==0.0.92
+
+langchain-community
+langchain-core
+langsmith
+
+# Maintain your other RAG dependencies
 transformers==4.35.2
 tokenizers==0.15.2
 sentence-transformers==3.0.1
